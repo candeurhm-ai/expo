@@ -39,12 +39,47 @@ jobs:
     params:
       platform: ios
       profile: unversioned-client
-# TODO vonovak: the following conditional probably isn't supported in workflows
-#  notify_failure:
-#    name: 🔔 Notify on Slack
-#    after: [build]
-#    if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-#    type: slack
-#    params:
-#      webhook_url: ${{ secrets.slack_webhook_ios }}
-#      message: 'Expo Go (iOS) build failed'
+
+  notify_failure:
+    name: 🔔 Notify on Slack
+    after: [build-ios]
+    env:
+      BUILD_STATUS: ${{ after.build-ios.outputs.status }}
+      BUILD_ID: ${{ after.build-ios.outputs.build_id }}
+      COMMIT_SHA: ${{ github.sha }}
+      BRANCH: ${{ github.ref_name }}
+    steps:
+      - run: |
+          if [ "$BUILD_STATUS" = "failure" ]; then
+            curl -X POST "$SLACK_WEBHOOK_IOS" \
+              -H 'Content-Type: application/json' \
+              -d "{
+                \"text\": \"🚨 Expo Go (iOS) build failed\",
+                \"blocks\": [
+                  {
+                    \"type\": \"section\",
+                    \"text\": {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Expo Go (iOS) build failed*\"
+                    }
+                  },
+                  {
+                    \"type\": \"section\",
+                    \"fields\": [
+                      {
+                        \"type\": \"mrkdwn\",
+                        \"text\": \"*Build ID:*\n$BUILD_ID\"
+                      },
+                      {
+                        \"type\": \"mrkdwn\",
+                        \"text\": \"*Branch:*\n$BRANCH\"
+                      },
+                      {
+                        \"type\": \"mrkdwn\",
+                        \"text\": \"*Commit:*\n$COMMIT_SHA\"
+                      }
+                    ]
+                  }
+                ]
+              }"
+          fi

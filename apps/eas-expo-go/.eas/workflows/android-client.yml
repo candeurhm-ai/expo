@@ -46,4 +46,4 @@ jobs:
 #    type: slack
 #    params:
 #      webhook_url: ${{ secrets.slack_webhook_ios }}
-#      message: 'Expo Go (iOS) build failed'
+#      message: 'Expo Go (Android) build failed'

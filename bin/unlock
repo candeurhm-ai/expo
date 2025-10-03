@@ -3,7 +3,7 @@ set -e -o pipefail
 
 # Default secret names, can be overridden with environment variables
 EXPO_KEYS_SECRET_NAME=${EXPO_KEYS_SECRET_NAME:-"expo-expo-keys-json"}
-EXPO_EXPOTOOLS_SECRET_NAME=${EXPO_EXPOTOOLS_SECRET_NAME:-"expo-expotools-env"}
+EXPO_EXPOTOOLS_SECRET_NAME=${EXPO_EXPOTOOLS_SECRET_NAME:-"expo-expo-expotools-env"}
 
 # Paths to the secrets files
 SECRETS_DIR="$(dirname "$0")/../secrets"
